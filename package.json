@@ -1,0 +1,21 @@
+{
+  "name": "@nathangasc/http-utils-ts",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "test": "npm run clean && npm run build && ts-node demo/index.ts",
+    "demo": "npm run test"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "hash-it": "^6.0.0",
+    "ts-mixer": "^6.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}
