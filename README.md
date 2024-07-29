@@ -19,7 +19,7 @@ npm install @nathangasc/http-utils-ts
 
 The following is an example to demonstrates how to use the library to fetch quotes from the [Type Fit API](https://type.fit/api/quotes) and cache the responses in the `./cache` directory. The rate limit is set to 10 requests per second.
 ```ts
-import { HttpUtils } from './../src/index';
+import { HttpUtils } from '@nathangasc/http-utils-ts'
 
 class ApiWrapper extends HttpUtils {
     constructor() {
