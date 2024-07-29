@@ -1,6 +1,6 @@
 {
   "name": "@nathangasc/http-utils-ts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "./dist/index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
@@ -9,9 +9,21 @@
     "test": "npm run clean && npm run build && ts-node demo/index.ts",
     "demo": "npm run test"
   },
-  "author": "",
+  "author": "Nathan GASC",
   "license": "ISC",
-  "description": "",
+  "description": "A library to make HTTP requests with cache system and rate limiting",
+  "keywords": [
+    "http",
+    "request",
+    "cache",
+    "rate limiting",
+    "http request",
+    "network"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NathanGASC/http-utils-ts"
+  },
   "dependencies": {
     "hash-it": "^6.0.0",
     "ts-mixer": "^6.0.4",
