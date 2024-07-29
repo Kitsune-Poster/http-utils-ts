@@ -4,7 +4,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "clean": "rimraf dist",
     "test": "npm run clean && npm run build && ts-node demo/index.ts",
     "demo": "npm run test"
