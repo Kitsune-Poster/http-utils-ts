@@ -17,14 +17,58 @@ export abstract class HttpCache {
         this.config.cache.path = removeSlash(this.config.cache.path)
     }
 
-    protected cacheResponse(url: string, response: CacheResponse){
-        let cachePath = this.config.cache.path + "/" + hash(url)
+    /**
+     * Search if a cache folder exist a folder with a valid
+     * timestamp duration.
+     */
+    private getCacheFolder(){
         if(!fs.existsSync(this.config.cache.path)) fs.mkdirSync(this.config.cache.path, { recursive: true })
-        fs.writeFileSync(cachePath, JSON.stringify(response))
+
+        let timestamp = this.config.cache.durationMiliseconds
+        let cacheFolderList = fs.readdirSync(this.config.cache.path)
+        let cacheFolder = cacheFolderList.find(folder => {
+            let folderPath = this.config.cache.path + "/" + folder
+            let stats = fs.statSync(folderPath)
+            return stats.isDirectory() && stats.mtimeMs + timestamp > Date.now()
+        })
+
+        if(!cacheFolder){
+            let now = new Date()
+            let foldername = now.toISOString().replace(/:/g, "-")
+            fs.mkdirSync(this.config.cache.path + "/" + foldername, { recursive: true })
+            cacheFolder = foldername
+        }
+
+        return this.config.cache.path + "/" + cacheFolder
+    }
+
+    private getCacheFile(url: string){
+        return this.getCacheFolder() + "/" + hash(url)
+    }
+
+    private deleteOldCache(){
+        let cacheFolder = this.config.cache.path
+        let cacheFolderList = fs.readdirSync(cacheFolder)
+        let timestamp = this.config.cache.durationMiliseconds
+        let now = Date.now()
+
+        for(let folder of cacheFolderList){
+            let folderPath = cacheFolder + "/" + folder
+            let stats = fs.statSync(folderPath)
+            if(stats.isDirectory() && stats.mtimeMs + timestamp < now){
+                fs.rmSync(folderPath, { recursive: true })
+            }
+        }
+    }
+
+    protected cacheResponse(url: string, response: CacheResponse){
+        if(this.config.cache.deleteOnExpire) this.deleteOldCache()
+        fs.writeFileSync(this.getCacheFile(url), JSON.stringify(response))
     }
 
     protected getCachedResponse(url: string){
-        let cachePath = this.config.cache.path + "/" + hash(url)
+        if(this.config.cache.deleteOnExpire) this.deleteOldCache()
+        let cachePath = this.getCacheFile(url)
         if(fs.existsSync(cachePath)){
             return JSON.parse(fs.readFileSync(cachePath, 'utf8')) as CacheResponse
         }

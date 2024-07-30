@@ -28,7 +28,6 @@ export class HttpUtils extends Mixin(HttpCache, HttpRateLimit) {
 
         const oldResponse = this.getCachedResponse(stringUrl)
         if(oldResponse && !noCache){
-            console.info(`Using cached response for ${stringUrl}`)
             return oldResponse
         }
         
@@ -36,7 +35,6 @@ export class HttpUtils extends Mixin(HttpCache, HttpRateLimit) {
 
         this.registerRequest()
         
-        console.info(`Fetching ${stringUrl}`)
         const response = await fetch(url, init)
         const cacheResponse: CacheResponse = {
             status: response.status,
@@ -45,9 +43,10 @@ export class HttpUtils extends Mixin(HttpCache, HttpRateLimit) {
             body: await response.text()
         }
 
-        if(!noCache)
+        if(!noCache){
             this.cacheResponse(stringUrl, cacheResponse)
-        
+        }
+
         return cacheResponse
     }
 }

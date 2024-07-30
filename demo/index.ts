@@ -4,9 +4,10 @@ class ApiWrapper extends HttpUtils {
     constructor() {
         super(
             {
-                cache: { path: './cache' },
-                rateLimit: { maxRequest: 10, perMiliseconds: 1000 }
-            })
+                cache: { path: './cache', durationMiliseconds: 3000, deleteOnExpire: true },
+                rateLimit: { maxRequest: 10, perMiliseconds: 100, deleteOnExpire: true }
+            }
+        )
     }
 
     private domain = "https://type.fit/"
@@ -19,7 +20,9 @@ class ApiWrapper extends HttpUtils {
 
 let main = async () => {
     const api = new ApiWrapper()
-    let quotes = await api.getQuotes()
-    console.log(quotes)
+    await api.getQuotes()
+    setTimeout(async () => {
+        await api.getQuotes()
+    }, 2000)
 }
 main()

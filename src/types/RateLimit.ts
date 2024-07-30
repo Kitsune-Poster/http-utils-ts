@@ -1,4 +1,5 @@
 export type RateLimit = {
     maxRequest: number,
-    perMiliseconds: number
+    perMiliseconds: number,
+    deleteOnExpire: boolean
 }

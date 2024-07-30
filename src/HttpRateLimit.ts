@@ -37,13 +37,6 @@ export abstract class HttpRateLimit{
         fs.writeFileSync(cacheFile, JSON.stringify(cache))
     }
 
-    protected registerRequest(){
-        let cache = this.getCache()
-        let now = Date.now()
-        cache[now] = (cache[now] || 0) + 1
-        this.setCache(cache)
-    }
-
     private isRateLimitReached(){
         let cache = this.getCache()
         let now = Date.now()
@@ -57,7 +50,27 @@ export abstract class HttpRateLimit{
         return count+1 > this.config.rateLimit.maxRequest
     }
 
+    private clearRateLimit(){
+        let cache = this.getCache()
+        let now = Date.now()
+        for(let key in cache){
+            if(parseInt(key) + this.config.rateLimit.perMiliseconds < now){
+                delete cache[key]
+            }
+        }
+        this.setCache(cache)
+    }
+    
+    protected registerRequest(){
+        if(this.config.rateLimit.deleteOnExpire) this.clearRateLimit()
+        let cache = this.getCache()
+        let now = Date.now()
+        cache[now] = (cache[now] || 0) + 1
+        this.setCache(cache)
+    }
+
     protected verifyRateLimit(): void {
+        if(this.config.rateLimit.deleteOnExpire) this.clearRateLimit()
         if(this.isRateLimitReached()){
             throw new HttpRateLimitError()
         }
