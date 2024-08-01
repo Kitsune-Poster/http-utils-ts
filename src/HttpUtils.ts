@@ -31,7 +31,7 @@ export class HttpUtils extends Mixin(HttpCache, HttpRateLimit) {
             return oldResponse
         }
         
-        this.verifyRateLimit()
+        await this.verifyRateLimit()
 
         this.registerRequest()
         

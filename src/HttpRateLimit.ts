@@ -16,6 +16,29 @@ export abstract class HttpRateLimit{
         protected config: HttpConfig,
     ){}
 
+    /**
+     * Wait until the rate limit reset.
+     * Once reset, the cache will be verified
+     * again and the request will be made if
+     * the rate limit is not reached again.
+     */
+    private async waitTillLimitReset(){
+        let cache = this.getCache()
+        let now = Date.now()
+        let nextReset = 0
+        for(let key in cache){
+            if(parseInt(key) + this.config.rateLimit.perMiliseconds > now){
+                nextReset = parseInt(key) + this.config.rateLimit.perMiliseconds
+                break
+            }
+        }
+
+        if(nextReset > 0){
+            await new Promise(resolve => setTimeout(resolve, nextReset - now))
+            await this.verifyRateLimit()
+        }        
+    }
+
     private createCacheFile(){
         if(!fs.existsSync(this.config.cache.path)) fs.mkdirSync(this.config.cache.path, { recursive: true })
 
@@ -69,9 +92,13 @@ export abstract class HttpRateLimit{
         this.setCache(cache)
     }
 
-    protected verifyRateLimit(): void {
+    protected async verifyRateLimit(): Promise<void> {
         if(this.config.rateLimit.deleteOnExpire) this.clearRateLimit()
         if(this.isRateLimitReached()){
+            if(this.config.rateLimit.waitTillLimitReset){
+                await this.waitTillLimitReset()
+                return
+            }
             throw new HttpRateLimitError()
         }
     }
