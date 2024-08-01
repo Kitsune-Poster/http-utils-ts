@@ -21,7 +21,7 @@ export abstract class HttpCache {
      * Search if a cache folder exist a folder with a valid
      * timestamp duration.
      */
-    private getCacheFolder(){
+    protected getCacheFolder(){
         if(!fs.existsSync(this.config.cache.path)) fs.mkdirSync(this.config.cache.path, { recursive: true })
 
         let timestamp = this.config.cache.durationMiliseconds
@@ -46,7 +46,7 @@ export abstract class HttpCache {
         return this.getCacheFolder() + "/" + hash(url)
     }
 
-    private deleteOldCache(){
+    protected deleteOldCache(){
         let cacheFolder = this.config.cache.path
         let cacheFolderList = fs.readdirSync(cacheFolder)
         let timestamp = this.config.cache.durationMiliseconds
