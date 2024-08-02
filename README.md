@@ -26,7 +26,7 @@ class ApiWrapper extends HttpUtils {
         super(
             {
                 cache: { path: './cache', durationMiliseconds: 3000, deleteOnExpire: true },
-                rateLimit: { maxRequest: 10, perMiliseconds: 100, deleteOnExpire: true }
+                rateLimit: { maxRequest: 10, perMiliseconds: 100, deleteOnExpire: true, waitTillLimitReset: true }
             }
         )
     }
